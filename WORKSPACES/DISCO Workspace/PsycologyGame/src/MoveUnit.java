@@ -1,0 +1,653 @@
+import java.awt.Point;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+
+public class MoveUnit implements Movable {
+
+	Load load;
+    UnitsController controller;
+    Unit unit;
+    Point center;
+    Point blueCurrentCenter;
+    Point redCurrentCenter;
+    
+    Boolean run = true;
+   // String currentGroup = "";
+    //Timer timer;
+    int numpoints;                  // unit data.
+    Point[] points = null;
+    int numNeighbors = 1;               // Each unit observes some of its neighbors.
+
+    //int leader = 0;                     // The current leader.
+    //double direction = Math.PI/ 4;   // Current direction for leader.
+    //double leaderChangeProb = 0.0;     // The probability that we'll change the leader.
+
+    double randomMoveProb = 0;        // Sometimes, a unit moves in a random direction. // last updated
+    int numMoveAttempts = 20;            // Move attempts before giving up. // last updated
+
+    int[] maxStepSize ;               // Distance moved each step.
+    int minDistSquare = 1;      
+    //int radius = 10;                    // Drawing parameters.
+
+   
+  MoveUnit(Load load){
+	  this.load = load;
+  }
+    
+   public void stop(){
+     	
+     	run = false;
+   }
+
+    	
+      
+   void loadUnit ()
+     {
+ 	// Pick random locations.
+	   
+	   System.out.println("end of load unit");
+     	numpoints = 2;
+        points = new Point [numpoints];
+        maxStepSize = new int[numpoints];
+         
+         
+        // get the offset location 
+        //karishma update for launcing new unit group 
+        if(center == null){
+        System.out.println("offset postion is zero ");
+        points[0] = new Point (unit.positionX+5, unit.positionY+5);
+        maxStepSize[0] = 1;
+        }else{
+        
+       
+        points[0] = new Point (center.x, center.y);
+        maxStepSize[0] = 1;
+        }
+         // added if else
+        points[1] = new Point (unit.positionX,unit.positionY);
+ 	    maxStepSize[1] = 10 * unit.speed; // updated
+ 	    
+ 	    
+  }
+
+
+
+   @Override
+	public void move(Unit unit,  UnitsController controller, Point center) {
+	   
+	   this.unit = unit;
+	   this.controller = controller;
+	   int centreX=0;
+	   int centerY=0;
+	   int sumX=0;
+	   int sumY=0;
+	   if(unit.colorID==1){
+		   this.center = Sea.blueUnits.currentCenter;
+	   }else{
+		   this.center = Sea.redUnits.currentCenter;
+	   }
+	   
+	   
+	   
+	 //  this.center = new Point(controller.list.get(0).positionX,controller.list.get(0).positionY);
+	   System.out.println("in the movable move method");  
+	   
+	   loadUnit();
+	   run = true;
+	   controller.inTransitList.add(unit);
+	   
+	   
+	   int futurePositionX = unit.positionX;
+	   int futurePositionY = unit.positionY;
+	     
+	    
+	   while (run) {
+		     
+		      // unit.flyTowardsCenterOfMass(controller.list);
+		     //load.keepUnitDistance(controller.list,controller.group);
+		   
+		   
+		   
+		   
+		   points[1] = new Point (futurePositionX,futurePositionY);
+	 	   maxStepSize[1] = 5 * unit.speed;
+	 	   
+	 	  
+	 	   
+	 	  int initialPositionX = futurePositionX;
+		   int initialPositionY = futurePositionY;
+          
+		   nextStep (unit);
+          
+          //unit.flyTowardsCenterOfMass(controller.list);
+          //load.keepUnitDistance(controller.list,controller.group);
+		   
+		   futurePositionX= points[1].x;
+		   futurePositionY=points[1].y;
+		   
+		   
+		   if((futurePositionX-initialPositionX)>4){
+			   futurePositionX = initialPositionX+4;
+		   }
+		   if((initialPositionX-futurePositionX)>4){
+			   futurePositionX = initialPositionX-4;
+		   }
+		   
+		   
+		   if((futurePositionY-initialPositionY)>4){
+			   futurePositionY = initialPositionY+4;
+		   }
+		   if((initialPositionY-futurePositionY)>5){
+			   futurePositionY = initialPositionY-4;
+		   }
+		   
+		   
+		  /* if((futurePositionX-initialPositionX) < 5){
+			   System.out.println("Proper X Movement"  + " for " + unit.id);
+		   }else{
+			   System.out.println("Abnormal X Movement"+ " for " + unit.id);
+		   }
+		   */
+		  /* if(Math.abs(futurePositionY-initialPositionY) < 5){
+			   System.out.println("Proper Y Movement");
+		   }else{
+			   System.out.println("Abnormal Y Movement");
+		   }*/
+		   
+          unit.positionX = futurePositionX;
+   		 unit.positionY = futurePositionY;
+   		 
+   		//System.out.println("Unit " + unit.id + " Final PositionX: " + unit.positionX + " Final PositionY: " + unit.positionY);
+   		 
+   		if (false) {
+     		//for (Unit u: controller.list) 
+             	unit.flyTowardsCenterOfMass(controller.list);
+     	       	load.keep.groupDistance(controller);
+
+     	} 
+   		 //unit.flyTowardsCenterOfMass(controller.list);
+   		 //load.keepUnitDistance(controller.list, controller.group);
+   		  
+   		  
+          
+          centerArea(unit);
+          
+         try {
+              Thread.sleep (1000);
+              //Launch and Unit Transfer Timer Settings
+          }
+          catch (InterruptedException e) {
+              break;
+          }
+
+          
+         load.render ();
+          
+      } // keep looping to move units and targets
+     
+     }
+     
+
+void centerArea(Unit unit) {
+	   
+
+		int dis = (int) ((controller.searchRadius * Constants.SEARCH_RADIUS) +
+				   Constants.SEARCH_RADIUS);
+		
+		
+		boolean blFlag=false;
+		
+		if(unit.colorID==1)
+			blFlag= Math.sqrt( Sea.blueUnits.currentCenter.distanceSq( new Point(unit.positionX, unit.positionY) ) ) < (dis/2);
+		else
+			blFlag= Math.sqrt( Sea.redUnits.currentCenter.distanceSq( new Point(unit.positionX, unit.positionY) ) ) < (dis/2);
+		
+		
+		if ( blFlag) {
+			
+			//if (load.stop)
+			
+			String unitType="";
+			String unitSeekTimer="";
+			
+			if(unit.colorID==1){
+				unitType="BlueUnit"+unit.id+"LaunchTimer";
+				unitSeekTimer="BlueUnit"+unit.id+"SeekTimer";
+			}else{
+				unitType="RedUnit"+unit.id+"LaunchTimer";
+				unitSeekTimer="RedUnit"+unit.id+"SeekTimer";
+			}
+			  
+			Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+	    	
+	    	
+	    	Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+	    	
+	    	//Loop to stop all the other threads while the unit is relocating
+	    	
+	    	for (int i=0;i<threadArray.length;i++){
+	    		
+	    		   			
+	    			if(threadArray[i].toString().contains(unitType)){
+	    			try{
+	    			threadArray[i].interrupt();
+	    			/*ExecutorService executor = Executors.newFixedThreadPool(1);
+	    			executor.submit(threadArray[i]);
+	    			executor.shutdown();*/
+
+	    			}catch(Exception e){
+	    				e.printStackTrace();
+	    			}
+	    		
+	    		}
+	    	}
+	    	
+	    	for (int i=0;i<threadArray.length;i++){
+	    		
+	   			
+    			if(threadArray[i].toString().contains("Blue") && threadArray[i].toString().contains("SeekTimer")){
+    			try{
+    			//threadArray[i].interrupt();
+    			ExecutorService executor = Executors.newFixedThreadPool(1);
+    			executor.submit(threadArray[i]);
+    			executor.shutdown();
+
+    			}catch(Exception e){
+    				e.printStackTrace();
+    			}
+    		
+    		}
+    	}
+	    	
+	    	
+	    	if(unit.isSwitch==true){
+	    		
+	    		unit.isSwitch=false;
+	    		
+	    		if(unit.colorID==1){
+	            	unitType="BlueUnit"+unit.id+"LaunchTimer";
+	            	if(Load.activityFeed.getUnitSwitchComplete().equals("Y"))
+	            	Sea.updatesTextArea.append("Unit Switch Complete - Red Unit (  " + unit.id + " )" + " has been switched to Blue Units successfully" + "\n\n");
+	            }else{
+	            	unitType="RedUnit"+unit.id+"LaunchTimer";
+	            	if(Load.activityFeed.getUnitSwitchComplete().equals("Y"))
+	            	Sea.updatesTextArea.append("Unit Switch Complete - Blue Unit (  " + unit.id + " )" + " has been switched to Red Units successfully" + "\n\n");
+	            }
+	    		
+	    		
+	    	}else{
+	    		if(unit.colorID==1){
+	            	unitType="BlueUnit"+unit.id+"LaunchTimer";
+	            	if(Load.activityFeed.getUnitLaunchComplete().equals("Y"))
+	            	Sea.updatesTextArea.append("Unit Launch Complete - Blue Unit (  " + unit.id + " )" + " has been launched successfully" + "\n\n");
+	            }else{
+	            	unitType="RedUnit"+unit.id+"LaunchTimer";
+	            	if(Load.activityFeed.getUnitLaunchComplete().equals("Y"))
+	            	Sea.updatesTextArea.append("Unit Launch - Red Unit (  " + unit.id + " )" + " has been launched successfully" + "\n\n");
+	            }
+		    	
+	    	}
+	    	
+	    
+	    	
+	    	
+	    		if(unit.colorID==1){
+				  controller=Sea.blueUnits;
+				  controller.list.add(unit);
+				  
+			  }else{
+				  controller=Sea.redUnits;
+				  controller.list.add(unit);
+				  
+			  }
+	    	
+			  
+			  controller.inTransitList.remove(unit);
+			  //controller.list.add(unit);
+			  
+			  
+		      //Load.unitList.add(unit);
+		      load.popUpMenueUpdate();
+			  
+			  if (!controller.isActive) {
+				  
+				  controller.groupButton_clicked();
+				  
+			  } else if (controller.isSeeking) {
+				  // stop seeking
+				  if(unit.colorID==1){
+					  Sea.blueUnits.seekButton_clicked();
+				  
+				  // start seeking
+					  Sea.blueUnits.seekButton_clicked();
+				  }else{
+					  Sea.redUnits.seekButton_clicked();
+					  
+					  // start seeking
+						  Sea.redUnits.seekButton_clicked();
+				  }
+				  
+			  } else {
+				  controller.seekButton_clicked();
+			  }
+				  
+		}	else if (controller.isTracking){
+			
+			//if (load.stop)
+			  this.stop();
+			  
+			  controller.list.add(unit);
+		      Load.unitList.add(unit);
+		      
+		   // stop tracking
+			  controller.trackButton_clicked();
+			  // start seeking
+			  controller.trackButton_clicked();
+		}
+
+   }
+     
+     
+   void nextStep (Unit unit)
+     {
+         // First, compute the new locations, then copy them into points[] array.
+ 	Point[] newLocations = new Point [numpoints];
+
+ 	    // Except for the leader, move the others towards neighbors.
+ 	for (int i=0; i<numpoints; i++) {
+ 	    if (i == 0) {
+                 // Apply different rules for leader.
+             newLocations[0] = moveLeader (unit);
+ 	    }
+             else {
+             	 
+                 newLocations[i] = crossBorder(moveOther (i,unit));
+                                  
+             }
+         }
+         
+         // Synchronous update for all.
+         for (int i=0; i<numpoints; i++) {
+             points[i] = newLocations[i];
+         }
+     }
+
+     
+     Point crossBorder (Point point){
+     	
+     	if (point.y > Constants.lBORDER-10) {
+     		
+     		return new Point (point.x,400); // it smaller than the lBORDER = 440
+     	
+     	} else if (point.y < 2) {
+     		
+     		return new Point (point.x,1);
+     		
+     	} else if (point.x > Constants.xBORDER) {
+     		
+     		return new Point (Constants.xBORDER-2,point.y);
+     	
+     	} else if (point.x < 0) {
+     		
+     		return new Point (2,point.y);
+     		
+     	}	
+     	
+     	return new Point (point.x,point.y);
+     }
+
+     
+     Point moveLeader (Unit unit) {
+ 	 	
+    	 if(unit.colorID==1){
+  		 return Sea.blueUnits.currentCenter;
+  	   }else{
+  		 return Sea.redUnits.currentCenter;
+  	   }
+    	 
+    	 
+    	
+     }
+     
+
+     Point moveOther (int i,Unit unit)
+     {
+         // Identify nearest neighbors.
+         int[] neighbors = findNearestNeighbors (i);
+         
+         // Compute centroid.
+         Point centroid = computeCentroid (neighbors,unit);
+         
+       //  if (RandTool.uniform() < randomMoveProb) {
+         if(false){
+             // Random move: pick a random direction.
+             return randomMove (i);
+         }
+         else {
+             /*// Apply rules.
+        	 if(unit.colorID==1){
+        		 centroid = new Point(Sea.blueUnits.list.get(0).positionX,Sea.blueUnits.list.get(0).positionY);
+      	   }else{
+      		   centroid = new Point(Sea.redUnits.list.get(0).positionX,Sea.redUnits.list.get(0).positionY);
+      	   }*/
+        	 
+        	 System.out.println("in move other:  i is "+i +"neighbors is " + findNearestNeighbors (i)+ "centroid is " + centroid +" unit is " + unit.id);
+        	 
+             return applyRules (i, neighbors, centroid,unit);
+         }
+                
+     } 
+
+/*
+     Point computeCentroid (int[] neighbors,Unit unit)
+     {
+         int sumX = 0, sumY = 0;
+         System.out.println("nearest nabour i: "+ neighbors[0]);
+        
+         
+         
+         
+         for (int k=0; k<numNeighbors; k++) {
+             sumX += points[neighbors[k]].x;
+             sumY += points[neighbors[k]].y;
+         }
+         int centX = (int) ( (double) sumX / (double) numNeighbors);
+         int centY = (int) ( (double) sumY / (double) numNeighbors);
+         
+         if(unit.colorID==1){
+        	 //blue unit
+        	 
+        	 if(blueCurrentCenter==null){
+        		 blueCurrentCenter = new Point(centX,centY);
+        	 }
+         }else{
+        	 //red unit
+        	 if(redCurrentCenter==null)
+        		 redCurrentCenter =new Point(centX,centY);
+         }
+         
+         if(unit.colorID==1){
+        	 return blueCurrentCenter;
+         }else{
+        	 return redCurrentCenter;
+         }
+        // return new Point (centX,centX);
+     }
+     
+     */
+     
+     // code for unit of new group, added by karishma
+     Point computeCentroid (int[] neighbors,Unit unit)
+     {
+         int sumX = 0, sumY = 0;
+   //     System.out.println("nearest nabour i: "+ neighbors[0]);
+   
+         
+         if (load.redUnits.list.size() == 0){
+        	
+    	 redCurrentCenter = new Point (unit.positionX,unit.positionY);
+     }else if (load.blueUnits.list.size() == 0){
+    	 blueCurrentCenter = new Point (unit.positionX,unit.positionY);
+     }else{
+     
+     
+     for (int k=0; k<numNeighbors; k++) {
+         sumX += points[neighbors[k]].x;
+         sumY += points[neighbors[k]].y;
+     }
+     int centX = (int) ( (double) sumX / (double) numNeighbors);
+     int centY = (int) ( (double) sumY / (double) numNeighbors);
+     
+     if(unit.colorID==1){
+    	 //blue unit
+    	 
+    	 if(blueCurrentCenter==null){
+    		 blueCurrentCenter = new Point(centX,centY);
+    	 }
+     }else{
+    	 //red unit
+    	 if(redCurrentCenter==null)
+    		 redCurrentCenter =new Point(centX,centY);
+     }
+     }
+     
+     if(unit.colorID==1){
+    	 return blueCurrentCenter;
+     }else{
+    	 return redCurrentCenter;
+     }
+    // return new Point (centX,centX);
+ }
+
+     Point randomMove (int i)
+     {
+         double theta = RandTool.uniform (0.0, 2.0*Math.PI);
+         int x = (int) (points[i].x + maxStepSize[i] * Math.cos (theta));
+         int y = (int) (points[i].y + maxStepSize[i] * Math.sin (theta));
+         return new Point (x,y);
+     }
+
+
+     Point applyRules (int i, int[] neighbors, Point centroid,Unit unit)
+     {
+   // 	 System.out.println(centroid.x);
+    	 // next condition added by karishma for launching a new unit of new group 
+    	if( !(load.redUnits.list.size() == 0) ) {
+    	// if(unit.colorID==1)
+    	// centroid = Sea.blueUnits.currentCenter;
+    	// else
+    	//	 centroid = Sea.redUnits.currentCenter;
+    		 centroid = Sea.redUnits.currentCenter;
+    		
+    	}else if(!(load.blueUnits.list.size() == 0)){
+    		centroid = Sea.blueUnits.currentCenter;
+    	}
+    	 System.out.println("in apply rules neighbor is" + neighbors[0]);
+    	// System.out.println("point i"+points[i].x+ points[i].y);
+    	
+    	// System.out.println(centroid.x);
+    	 
+       //  System.out.println("here value is "+ Math.sqrt (distance (points[i].x, points[i].y, centroid.x, centroid.y)) );
+    	if( (load.redUnits.list.size() == 0) ) {
+    		Sea.redUnits.currentCenter = centroid;
+    	}
+    	
+    	double centDist = Math.sqrt (distance (points[i].x, points[i].y, centroid.x, centroid.y));
+         
+  
+         double maxAlpha = 1.0;
+         
+         if (centDist < (double) maxStepSize[i]) {
+             maxAlpha = 1.0;
+         }
+         else {
+             maxAlpha = (double) maxStepSize[i] / centDist;
+         }
+         
+         boolean succ = false;
+         double alpha = maxAlpha;
+         int x=0,y=0;
+         
+         for (int m=0; m<numMoveAttempts; m++) {
+             // Compute new x,y.
+             int tempX = (int) (points[i].x + alpha * (centroid.x - points[i].x));
+             int tempY = (int) (points[i].y + alpha * (centroid.y - points[i].y));
+             int setDist = setDistance (tempX, tempY, neighbors);
+             if (setDist > minDistSquare) {
+                 // Valid.
+                 x = tempX;
+                 y = tempY;
+                 succ = true;
+                 break;
+             }
+             // Otherwise, try a smaller move.
+             alpha = alpha / 2.0;
+         }
+         
+         // If not successful, try moving away from centroid.
+         alpha = maxAlpha;
+         if (!succ) {
+             x = (int) (points[i].x - alpha * (centroid.x - points[i].x));
+             y = (int) (points[i].y - alpha * (centroid.y - points[i].y));
+         }
+
+         return new Point (x,y);
+     }
+
+     
+     int[] findNearestNeighbors (int i)
+     {
+ 	int[] neighbors = new int [numNeighbors];
+ 	int current = i;
+ 	for (int k=0; k<numNeighbors; k++) {
+ 	    current = nextpoint (current);
+ 	    neighbors[k] = current;
+ 	}
+ 	return neighbors;
+     }
+
+
+     int nextpoint (int i) 
+     {
+ 	if (i < numpoints-1) {
+ 	    return i+1;
+ 	}
+ 	else {
+ 	    return 0;
+ 	}
+     }
+
+
+     int distance (int x1, int y1, int x2, int y2) 
+     {
+ 	return ( (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) );
+     }
+
+
+     int setDistance (int x, int y, int[] neighbors) 
+     {
+ 	// Distance to closest neighbor.
+ 	Point p = points[neighbors[0]];
+ 	int min = distance (x, y, p.x, p.y);
+ 	for (int k=1; k<numNeighbors; k++) {
+ 	    p = points[neighbors[k]];
+ 	    int d = distance (x,y, p.x, p.y);
+ 	    if (d < min) {
+ 		min = d;
+ 	    }
+ 	}
+ 	return min;
+     }
+
+    
+    
+    // These Methods Are not Are not implement methods
+	@Override
+	public void move(Target target) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

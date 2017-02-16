@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario movement="Random" name="Demo2" performanceLevel="100" seed="0123456789" >
+	<mapgraphics>
+		<mapimage src="/GroundUpdate.png" bottombackgroundcolor="blue" topbackgroundcolor="blue" />
+	</mapgraphics>
+   <targets>
+      <target id="T1"  imagePath="/targetship1.png" priority="Low" trueIdentity="LOW" status="ACTIVE"  identityLevels="HIGH,MEDIUM,LOW" positionX="200" positionY="500" speed="1" description="This is just a small fishing vessel" />
+      <target id="Battleship"  priority="HIGH" trueIdentity="HIGH" identityLevels="HIGH,MEDIUM,LOW" status="ACTIVE" imagePath="/targetship1.png" positionX="660" positionY="180" speed="1" description="This is the battleship" />
+      <target id="T3" priority="LOW" trueIdentity="HIGH" identityLevels="HIGH,MEDIUM,LOW" status="ACTIVE"  imagePath="/Ship.png" positionX="150" positionY="200" speed="1" description="This is just a small fishing vessel" />
+      <target id="T4" priority="LOW" trueIdentity="HIGH" identityLevels="HIGH,MEDIUM,LOW" status="IN-ACTIVE"  imagePath="/target4.png" positionX="100" positionY="400" speed="1" description="Target 4 Description" />
+      <target id="T5" priority="HIGH" trueIdentity="HIGH" identityLevels="HIGH,MEDIUM,LOW" status="IN-ACTIVE" imagePath="/target5.png"  positionX="200" positionY="300" speed="1" description="Target 5 Description From XML" />
+      <target id="T6" priority="LOW" trueIdentity="HIGH" identityLevels="HIGH,MEDIUM,LOW" status="IN-ACTIVE" imagePath="/target6.png"  positionX="200" positionY="300" speed="1" description="Target 6 Description" />
+   </targets>
+   <units>
+      <unit colorID="1" detectRadius="40" fuelpoints="1" id="B1" positionX="440" positionY="590" price="5" speed="2" status="ACTIVE" relocationDetectRadius="105" relocationSpeed="5" />
+      <unit colorID="1" detectRadius="40" fuelpoints="1" id="B2" positionX="460" positionY="590" price="5" speed="2" status="ACTIVE" relocationDetectRadius="105" relocationSpeed="5" />
+      <unit colorID="1" detectRadius="50" fuelpoints="1" id="I1" positionX="480" positionY="590" price="350" speed="2" status="IN-ACTIVE" relocationDetectRadius="5" relocationSpeed="5" />
+      <unit colorID="1" detectRadius="50" fuelpoints="1" id="I3" positionX="450" positionY="590" price="400" speed="2" status="IN-ACTIVE" relocationDetectRadius="10" relocationSpeed="5" />
+      <unit colorID="1" detectRadius="100" fuelpoints="1" id="HQ1" positionX="750" positionY="270" price="500" speed="2" status="IN-ACTIVE" relocationDetectRadius="10" relocationSpeed="5" />
+      <unit colorID="2" detectRadius="25" fuelpoints="1" id="P1" positionX="150" positionY="250" price="200" speed="2" status="IN-ACTIVE" relocationDetectRadius="10.5" relocationSpeed="2" />
+      <unit colorID="2" detectRadius="30" fuelpoints="1" id="P3" positionX="140" positionY="260" price="500" speed="2" status="IN-ACTIVE" relocationDetectRadius="10" relocationSpeed="5" />
+      <unit colorID="2" detectRadius="20" fuelpoints="1" id="P2" positionX="200" positionY="300" price="200" speed="2" status="IN-ACTIVE"  relocationDetectRadius="10" relocationSpeed="5" />
+      <unit colorID="2" detectRadius="50" fuelpoints="1" id="I4" positionX="180" positionY="280" price="350" speed="2" status="IN-ACTIVE" relocationDetectRadius="10" relocationSpeed="5" />
+      <unit colorID="2" detectRadius="50" fuelpoints="1" id="I3" positionX="190" positionY="200" price="350" speed="2" status="IN-ACTIVE" relocationDetectRadius="10" relocationSpeed="5" />
+   </units>
+   <briefing>
+   		<img src="briefscenario2.png" text="We have received word that an enemy battleship is in this sector. We are concerned that they are gathering intelligence that could be used to attack civilians. We had an accurate known position of the battlesip at T -200 and have an estimated trajectory for its location at T -100. Please search for and find the battleship." sizeX="1030" sizeY="740"/>
+   </briefing>
+   <activityfeed>
+   <updates enableAllControls="Y" newTargetSpotted="Y" oldTargetSpotted="Y"  newTargetInspect="Y" oldTargetInspect="Y" targetOutOfRange="Y" unitLaunchStart="Y" unitLaunchComplete="Y" unitRelocateStart="Y" unitRelocateComplete="Y" newTargetView="Y" oldTargetView="Y" targetDetectionSuccess="Y" targetDetectionFailure="Y" unitSwitchStart="Y" unitSwitchComplete="Y"></updates> 
+   </activityfeed>
+   <configprop>
+   		<properties DISCO_TIMER="300" DISCO_TIMER_TYPE="UPWARDS" DISCO_TIMER_DISPLAY="SECONDS" FC_POINTS="1" MB_POINTS_HIGH="3" MB_POINTS_LOW="1" TB_POINTS_HIGH="5" TB_POINTS_LOW="1" TARGET_SCREEN_RES_WIDTH="25" TARGET_SCREEN_RES_HEIGHT="25" BRIEFING_WINDOW_SIZEX="500" BRIEFING_WINDOW_SIZEY="200" TARGET_TIMER_COUNTER="180" TOTAL_CREDIT_LIMIT="700" />
+   </configprop>
+   <usercontrols>
+       <usercontols LAUNCH_UNIT="Y" BRIEFING="Y" STATUS="N" OVERLAY="Y" RED_TO_BLUE_SWITCH="Y" BLUE_TO_RED_SWITCH="Y" COHESION_SLIDER="Y" PROXIMITY_SLIDER="Y" VIEW_TARGET="Y" RED_GROUP="Y" BLUE_GROUP="Y" />
+      <!--  G - Disable the Button and Grey out the selected element Y - The element will be active and visible N - The element will not be appear/available for the User -->
+   </usercontrols>
+</scenario>

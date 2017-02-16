@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario movement="Random" name="Demo2" performanceLevel="100" seed="0123456789" >
+	<mapgraphics>
+		<mapimage src="/GroundUpdate.png" bottombackgroundcolor="blue" topbackgroundcolor="blue" />
+	</mapgraphics>
+   <targets>
+      <target id="T1"  imagePath="/fooddistribution.png" priority="Low" trueIdentity="LOW" status="ACTIVE"  identityLevels="HIGH,MEDIUM,LOW" positionX="400" positionY="400" speed="0" description="This is just a small fishing vessel" />
+      <target id="Data Sensor"  priority="HIGH" trueIdentity="HIGH" identityLevels="HIGH,MEDIUM,LOW" status="ACTIVE" imagePath="/datasensor.png" positionX="660" positionY="180" speed="0" description="This is the battleship" />
+      <target id="T3" priority="LOW" trueIdentity="LOW" identityLevels="HIGH,MEDIUM,LOW" status="ACTIVE"  imagePath="/Ship.png" positionX="750" positionY="500" speed="1" description="This is just a small fishing vessel" />
+      <target id="T4" priority="LOW" trueIdentity="LOW" identityLevels="HIGH,MEDIUM,LOW" status="ACTIVE"  imagePath="/patrol.png" positionX="500" positionY="400" speed="1" description="This is just a local patrol ship" />
+      <target id="T5" priority="HIGH" trueIdentity="LOW" identityLevels="HIGH,MEDIUM,LOW" status="ACTIVE" imagePath="/repariship.png"  positionX="200" positionY="170" speed="1" description="This is just a repair ship" />
+      <target id="T6" priority="LOW" trueIdentity="LOW" identityLevels="HIGH,MEDIUM,LOW" status="ACTIVE" imagePath="/ferry.png"  positionX="600" positionY="300" speed="0" description="This is just a local ferry" />
+   </targets>
+   <units>
+      <unit colorID="1" detectRadius="20" fuelpoints="1" id="1" positionX="440" positionY="590" price="5" speed="2" status="ACTIVE" relocationDetectRadius="5" relocationSpeed="5" />
+      <unit colorID="1" detectRadius="20" fuelpoints="1" id="2" positionX="460" positionY="590" price="5" speed="2" status="ACTIVE" relocationDetectRadius="5" relocationSpeed="5" />
+      <unit colorID="1" detectRadius="50" fuelpoints="1" id="3" positionX="480" positionY="590" price="35" speed="2" status="IN-ACTIVE" relocationDetectRadius="5" relocationSpeed="5" />
+      <unit colorID="1" detectRadius="75" fuelpoints="1" id="4" positionX="450" positionY="590" price="40" speed="2" status="IN-ACTIVE" relocationDetectRadius="10" relocationSpeed="5" />
+      <unit colorID="1" detectRadius="100" fuelpoints="1" id="5" positionX="750" positionY="270" price="50" speed="2" status="IN-ACTIVE" relocationDetectRadius="10" relocationSpeed="5" />
+      <unit colorID="2" detectRadius="25" fuelpoints="1" id="6" positionX="150" positionY="250" price="20" speed="2" status="IN-ACTIVE" relocationDetectRadius="10.5" relocationSpeed="2" />
+      <unit colorID="2" detectRadius="50" fuelpoints="1" id="7" positionX="140" positionY="260" price="50" speed="2" status="IN-ACTIVE" relocationDetectRadius="10" relocationSpeed="5" />
+      <unit colorID="2" detectRadius="25" fuelpoints="1" id="8" positionX="200" positionY="300" price="20" speed="2" status="IN-ACTIVE"  relocationDetectRadius="10" relocationSpeed="5" />
+      <unit colorID="2" detectRadius="100" fuelpoints="1" id="9" positionX="180" positionY="280" price="20" speed="2" status="IN-ACTIVE" relocationDetectRadius="10" relocationSpeed="5" />
+      <unit colorID="2" detectRadius="50" fuelpoints="1" id="10" positionX="190" positionY="200" price="20" speed="2" status="IN-ACTIVE" relocationDetectRadius="10" relocationSpeed="5" />
+   </units>
+   <briefing>
+   		<img src="briefscenario4.png" text="We have received word that a sea surface data sensor has recieved damage from a local storm. We have lost contact with the data sensor and wish to find it to recover informaiton about the storm. We had an accurate known position of the data sensor at T -200 and have an estimated trajectory for its location at T -100. Please search for and find the data sensor." sizeX="1030" sizeY="740"/>
+   </briefing>
+   <activityfeed>
+   <updates enableAllControls="Y" newTargetSpotted="Y" oldTargetSpotted="Y"  newTargetInspect="Y" oldTargetInspect="Y" targetOutOfRange="Y" unitLaunchStart="Y" unitLaunchComplete="Y" unitRelocateStart="Y" unitRelocateComplete="Y" newTargetView="Y" oldTargetView="Y" targetDetectionSuccess="Y" targetDetectionFailure="Y" unitSwitchStart="Y" unitSwitchComplete="Y"></updates> 
+   </activityfeed>
+   <configprop>
+   		<properties DISCO_TIMER="9999" DISCO_TIMER_TYPE="UPWARDS" DISCO_TIMER_DISPLAY="SECONDS" FC_POINTS="1" MB_POINTS_HIGH="3" MB_POINTS_LOW="1" TB_POINTS_HIGH="5" TB_POINTS_LOW="1" TARGET_SCREEN_RES_WIDTH="25" TARGET_SCREEN_RES_HEIGHT="25" BRIEFING_WINDOW_SIZEX="500" BRIEFING_WINDOW_SIZEY="200" TARGET_TIMER_COUNTER="180" TOTAL_CREDIT_LIMIT="45" />
+   </configprop>
+   <usercontrols>
+       <usercontols LAUNCH_UNIT="Y" BRIEFING="Y" STATUS="N" OVERLAY="Y" RED_TO_BLUE_SWITCH="Y" BLUE_TO_RED_SWITCH="Y" COHESION_SLIDER="Y" PROXIMITY_SLIDER="Y" VIEW_TARGET="Y" RED_GROUP="Y" BLUE_GROUP="Y" />
+      <!--  G - Disable the Button and Grey out the selected element Y - The element will be active and visible N - The element will not be appear/available for the User -->
+   </usercontrols>
+</scenario>
